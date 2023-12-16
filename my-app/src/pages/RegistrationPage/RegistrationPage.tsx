@@ -80,7 +80,7 @@ const RegistrationPage: React.FC = () => {
         formData.append('full_name', fullnameValue)
         formData.append('phone_number', phoneNumberValue)
         formData.append('password', passwordValue);
-        const response: AxiosResponse = await axios.post('http://localhost:8000/user/', formData, {
+        const response: AxiosResponse = await axios.post('http://localhost:8001/user/', formData, {
           withCredentials: true, // Включаем передачу кук в запросах
         });
 

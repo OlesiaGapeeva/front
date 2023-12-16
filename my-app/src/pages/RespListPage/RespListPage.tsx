@@ -8,14 +8,16 @@ import BreadCrumbs from '../../components/BreadCrumbs/BreadCrumbs'
 import { useDispatch } from 'react-redux'
 import { setRespAction, useResp } from "../../slices/RespSlices.ts"
 import { useLinksMapData, setLinksMapDataAction } from "../../slices/DetailedSlices.ts";
-import { Next } from 'react-bootstrap/esm/PageItem'
 
 export type ReceivedRespData = {
-    id: number;
+    user: any
+    id: number | null;
     status: string;
     creation_date: string;
     editing_date: string;
     approving_date: string;
+    full_name: string;
+    suite: number | null;
   }
 
 const RespListPage = () => {
@@ -26,7 +28,7 @@ const RespListPage = () => {
 
     const getAllResp = async () => {
         try {
-          const response = await axios('http://localhost:8000/resp/', {
+          const response = await axios('http://localhost:8001/resp/', {
             method: 'GET',
             withCredentials: true
           })
@@ -39,6 +41,8 @@ const RespListPage = () => {
             creation_date: raw.creation_date,
             editing_date: raw.editing_date,
             approving_date: raw.approving_date,
+            suite:raw.suite,
+            full_name:raw.user.full_name
         }));
         dispatch(setRespAction(newArr))
         } catch(error) {

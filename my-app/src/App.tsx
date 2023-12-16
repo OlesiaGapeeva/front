@@ -60,7 +60,7 @@ function App() {
   const getInitialUserInfo = async () => {
     console.log(cookies.get("session_id"))
     try {
-      const response: AxiosResponse = await axios('http://localhost:8000/user_info',
+      const response: AxiosResponse = await axios('http://localhost:8001/user_info',
       { 
         method: 'GET',
         withCredentials: true, 
@@ -86,7 +86,7 @@ function App() {
 
   const getVacancies = async () => {
     try {
-        const response = await axios('http://localhost:8000/vacancies', {
+        const response = await axios('http://localhost:8001/vacancies', {
             method: 'GET',
             withCredentials: true,
             
@@ -97,7 +97,6 @@ function App() {
         }
         const vacancies = response.data.vacancies;
         if (response.data.resp_id) {
-          getCurrentResp(response.data.resp_id);
           dispatch(setCurrentRespIdAction(response.data.resp_id))
         }
         const newArr = vacancies.map((raw: ReceivedVacancyData) => ({
@@ -111,6 +110,7 @@ function App() {
           status: raw.status
         }));
         dispatch(setVacanciesAction(newArr));
+        
     }
     catch {
       dispatch(setVacanciesAction(mockVacancies));
@@ -159,7 +159,7 @@ const getCurrentResp = async (id: number) => {
         {!isAuth && <Route path='/login' element={<LoginPage />} />}
         {isAuth && (
           <>
-            <Route path='/resp' element={<CurrentRespPage />} />
+            {/* <Route path='/resp' element={<CurrentRespPage />} /> */}
             <Route path='/responses' element={<RespListPage />} />
             <Route path="/resp/:id/" element={<SelectedRespPage />} />
           </>

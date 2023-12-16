@@ -1,7 +1,6 @@
 import React from 'react'
 import 'bootstrap/dist/css/bootstrap.css';
 import ReactDOM from 'react-dom/client'
-import { BrowserRouter as Router } from 'react-router-dom'; // добавьте эту строку
 import App from './App'
 import store from "./store";
 import { Provider } from "react-redux";

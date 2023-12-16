@@ -12,12 +12,12 @@ import BreadCrumbs from '../../components/BreadCrumbs/BreadCrumbs';
 import {useDispatch} from "react-redux";
 import {useTitleValue, useVacancies,
     setTitleValueAction, setVacanciesAction} from "../../slices/MainSlice.ts";
-import { ErrorInfo } from 'react-dom/client';
 import { useIsAuth} from "../../slices/AuthSlices.ts";
 import {setCurrentRespIdAction, useCurrentRespId} from "../../slices/RespSlices.ts";
 import { useLinksMapData, setLinksMapDataAction} from "../../slices/DetailedSlices.ts";
 import { useVacancyFromResp, setVacancyFromRespAction } from  "../../slices/RespSlices.ts";
 //import Cookies from "universal-cookie";
+
 
 //const cookies = new Cookies();
 export type Vacancies = {
@@ -93,71 +93,11 @@ export type ReceivedUserData = {
     is_superuser: boolean,
 }
 
-// const MainPage: React.FC = () => {
-//     const [vacancies, setVacancies] = useState<Vacancies[]>([]);
-//     const [titleValue, setTitleValue] = useState<string>('')
-
-//     const fetchVacancies = async () => {
-//         let response = null;
-//         let url = 'http://localhost:8000/vacancies';
-    
-//         if (titleValue) {
-//             url += `?keyword=${titleValue}`;
-//         }
-//         console.log(url);
-    
-//         try {
-//             response = await fetch(url);
-//             const jsonData = await response.json();
-//             const newVacanciesArr = jsonData.map((raw: ReceivedVacancyData) => ({
-//                 id: raw.id,
-//                 title: raw.title,
-//                 salary: raw.salary,
-//                 city: raw.city,
-//                 company: raw.company,
-//                 image: raw.image,
-//                 exp: raw.exp
-//             }));
-//             setVacancies(newVacanciesArr);
-
-//         }catch (error) {
-//             console.log(error)
-//                 console.error("Error during fetch:", error);
-//                 // Остальной код обработки ошибки
-//             }
-//         // } catch {
-//         //     if (titleValue) {
-//         //         const filteredArray = mockVacancies.filter((mockVacancy) =>
-//         //             mockVacancy.title.includes(titleValue)
-//         //         );
-//         //         setVacancies(filteredArray);
-//         //     } else {
-//         //         setVacancies(mockVacancies);
-//         //     }
-//         // }
-        
-//     };
-
-    // useEffect(() => {
-    //     fetchVacancies();
-    // }, []);
-
-    // const handleSearchButtonClick = () => {
-    //     fetchVacancies();
-    // }
-
-    // const handleTitleValueChange = (event: ChangeEvent<HTMLInputElement>) => {
-    //     setTitleValue(event.target.value);
-    // };
-
-    
-    // const handleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    //     event.preventDefault();
-    // };
-
     const MainPage = () => {
         const dispatch = useDispatch()
         const titleValue = useTitleValue();
+        console.log(titleValue)
+        const resp = useCurrentRespId
         const vacancies = useVacancies();
         const vacancyFromResp = useVacancyFromResp();
         const isUserAuth = useIsAuth();
@@ -171,11 +111,16 @@ export type ReceivedUserData = {
             dispatch(setLinksMapDataAction(new Map<string, string>([
                 ['Вакансии', '/vacancies']
             ])))
+            const storedVacancyFromResp = localStorage.getItem('vacancyFromResp');
+            if (storedVacancyFromResp) {
+                dispatch(setVacancyFromRespAction(JSON.parse(storedVacancyFromResp)));
+  }
         }, [])
+        
 
         const getCurrentResp = async (id: number) => {
             try {
-              const response = await axios(`http://localhost:8000/resp/${id}/`, {
+              const response = await axios(`http://localhost:8001/resp/${id}/`, {
                 method: 'GET',
                 withCredentials: true,
               })
@@ -189,14 +134,16 @@ export type ReceivedUserData = {
                 exp: raw.exp,
                 status: raw.status
             }));
-          
+            const resp_id = response.data.resp_id
             dispatch(setVacancyFromRespAction(newArr))
+            dispatch(setCurrentRespIdAction(resp_id))
+            console.log("Id черновика", resp_id)
         } catch(error) {
           throw error;
         }
       }
         const getVacancies = async () => {
-            let url = 'http://localhost:8000/vacancies'
+            let url = 'http://localhost:8001/vacancies'
             if (titleValue) {
                 url += `?keyword=${titleValue}`
             }
@@ -205,11 +152,10 @@ export type ReceivedUserData = {
                     method: 'GET',
                     withCredentials: true 
                 });
-                console.log("here")
                 if (response.data.resp_id) {
-                    getCurrentResp(response.data.resp_id);
                     dispatch(setCurrentRespIdAction(response.data.resp_id))
                 }
+                console.log("VACANCIES", response.data.resp_id)
                 const jsonData = response.data.vacancies;
                 const newArr = jsonData.map((raw: ReceivedVacancyData) => ({
                     id: raw.id,
@@ -237,7 +183,7 @@ export type ReceivedUserData = {
 
         const postVacancyToResp = async (id: number) => {
             try {
-                const response = await axios(`http://localhost:8000/vacancies/${id}/add/`, {
+                const response = await axios(`http://localhost:8001/vacancies/${id}/add/`, {
                     method: 'POST',
                     withCredentials: true,
                 })
@@ -252,8 +198,11 @@ export type ReceivedUserData = {
                     status: response.data.status
                 }
                 
+                
                 dispatch(setVacancyFromRespAction([...vacancyFromResp, addedVacancy]))
+                localStorage.setItem('vacancyFromResp', JSON.stringify([...vacancyFromResp, addedVacancy]));
                 toast.success("Вакансия успешно добавлена в отклик!");
+                getVacancies();
             } catch (error) {
                 if (error instanceof Error) {
                     // Если error является экземпляром класса Error
@@ -277,15 +226,35 @@ export type ReceivedUserData = {
         // const handleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         //     event.preventDefault();
         // };
+
+        // const handleTitleValueChange = (event: ChangeEvent<HTMLInputElement>) => {
+        //     setTitleValue(event.target.value);
+        // };
+    
     
     return (
-        <div className={styles.main_page}>
+        <div className={styles.main_page} style={{
+            display: "flex",
+            flexDirection: "column",
+        }}>
             <Header/>
             <nav aria-label="breadcrumb" style={{zIndex: '2'}}>
-            <ol className="breadcrumb" style={{ marginTop: '100px' , width: '95.53vw', height: '45px',  backgroundColor: 'white'}}>
+            <ol className="breadcrumb" style={{ marginTop: '100px' , height: '35px',  backgroundColor: 'white'}}>
+            <div style={{marginLeft: '2vw', marginTop: '-40px'}}>
             <BreadCrumbs links={linksMap}></BreadCrumbs>
-            <div style={{display: 'flex', justifyContent: 'center', marginTop: "-30px"}}>
-            <Form.Group controlId="name">
+            </div>
+            <div style={{display: 'flex', justifyContent: 'center', marginTop: "0px"}}>
+            <Form.Group controlId="name" style={{
+                alignItems: "center",
+                justifyContent: "center",
+                display: "flex",
+                flexDirection: "row",
+                flexWrap: "wrap",
+                justifyItems: "center",
+
+               
+                
+            }}>
                 <Form.Control
                 type="text"
                 placeholder="Введите название вакансии"
@@ -293,15 +262,17 @@ export type ReceivedUserData = {
                     backgroundColor: 'rgb(231, 230, 230)',
                     height: '30px',
                     width: '60vw',
-                    fontSize: '18px',
-                    border: 'none',
-                    outline: 'none',
-                    marginRight: '5px',
-                    textAlign: 'center',
+                    // fontSize: '18px',
+                    // border: 'none',
+                    // outline: 'none',
+                    // marginRight: '5px',
+                    // textAlign: 'center',
+                    marginLeft: "4.1vw",
+                    // justifyContent: "center"
                 }}
+                value={titleValue} 
                 onChange={handleTitleValueChange}
                 />
-            </Form.Group>
             <Button
                 variant="primary"
                 type="submit"
@@ -322,6 +293,7 @@ export type ReceivedUserData = {
             >
                 Поиск
             </Button>
+            </Form.Group>
             </div>
             </ol>
             </nav>
@@ -331,7 +303,7 @@ export type ReceivedUserData = {
                     <div className={styles["cards"]}>
                         {
                         vacancies.map((vacancy: Vacancies) => (
-                            <div className='card'>
+                            <div>
                             <OneCard id={vacancy.id} image={vacancy.image} salary={Number(vacancy.salary)} title={vacancy.title} city={vacancy.city} company={vacancy.company} exp={vacancy.exp} isUserAuth={isUserAuth} onButtonClick={() => postVacancyToResp(vacancy.id)}></OneCard>
                             </div>
                         ))}

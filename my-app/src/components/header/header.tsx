@@ -2,33 +2,51 @@ import React from 'react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom'
 import styles from './header.module.scss'
-import axios, {AxiosResponse} from 'axios';
+import axios from 'axios';
 import {useDispatch} from "react-redux";
-import {useUser, useIsAuth, setIsAuthAction, setUserAction} from "../../slices/AuthSlices.ts";
-import { useVacancyFromResp} from "../../slices/RespSlices.ts";
+import {useIsAuth, setIsAuthAction, setUserAction} from "../../slices/AuthSlices.ts";
+import {setCurrentRespDateAction, setCurrentRespIdAction, setVacancyFromRespAction, useCurrentRespId} from "../../slices/RespSlices.ts";
 const cookies = new Cookies();
 import Cookies from "universal-cookie";
 import { toast } from 'react-toastify';
-import { motion, AnimatePresence } from "framer-motion";
-import ProfileWindow from '../ProfileWindow/ProfileWindow.tsx';
+import { useEffect } from 'react';
+import { useSelector } from 'react-redux';
 
 
 const Header: React.FC = () => {
   const dispatch = useDispatch();
     const [isProfileButtonClicked, setIsProfileButtonClicked] = useState(false);
-    const [isBurgerMenuOpened, setIsBurgerMenuOpened] = useState(false)
+    const [IsResp, setIsResp] = useState(false);
     const isUserAuth = useIsAuth();
-    const vacanciesFromApplications = useVacancyFromResp();
-    let user = useUser();
-
+    const resp = useCurrentRespId();
     const handleProfileButtonClick = () => {
         setIsProfileButtonClicked(!isProfileButtonClicked);
     };
+    // if (resp) {
+    //   setIsResp(true)
+    //   }
+    //   else {
+    //     setIsResp(false)
+    // }
+
+    // Обновление компонента при каждом изменении статуса запроса
+    // useEffect(() => {
+    //   if (resp) {
+    //     setIsResp(true)
+    //   }
+    //   else {
+    //     setIsResp(false)
+    //   }
+    // }, [resp]);
+
+    useEffect(() => {
+      setIsResp(!!resp);
+    }, [resp]);
 
     const logout = async () => {
         try {
             console.log(cookies.get('session_id'))
-            const response: AxiosResponse = await axios('http://localhost:8000/logout',
+           await axios('http://localhost:8001/logout',
             {
                 method: "POST",
                 withCredentials: true,
@@ -40,6 +58,10 @@ const Header: React.FC = () => {
             cookies.remove("session_id", { path: "/" }); 
 
             dispatch(setIsAuthAction(false))
+            dispatch(setVacancyFromRespAction([]));
+            dispatch(setCurrentRespDateAction(''));
+            dispatch(setCurrentRespIdAction(undefined));
+            localStorage.setItem('vacancyFromResp', JSON.stringify([]));
             dispatch(setUserAction({
                 email: "",
                 fullname: "",
@@ -78,7 +100,14 @@ const Header: React.FC = () => {
           <div className={styles.header__profileWrapper}>
           {isUserAuth && <Link to="/responses" className={styles.header__profile}>Список откликов</Link>}
            <span className={styles.header__spacer}>&nbsp;&nbsp;&nbsp;</span> {/* Увеличенный пробел */}
-           {isUserAuth &&  <Link to="/resp" className={styles.header__profile}>Отклик</Link>}
+           {isUserAuth && IsResp && (
+  <Link to={`/resp/${resp}`} className={styles.header__profile}>
+    Отклик
+  </Link>
+)}
+{isUserAuth && !IsResp && (
+  <div style={{ color: "#32c86c" }}>Отклик</div>
+)}
             {/* <Link to="/registration" className={styles.header__profile}>Личный кабинет</Link> */}
             <span className={styles.header__spacer}>&nbsp;&nbsp;&nbsp;</span> {/* Увеличенный пробел */}
             {isUserAuth && (

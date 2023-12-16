@@ -7,6 +7,9 @@ import VacancyTable from '../../components/VacTable/VacTable';
 import BreadCrumbs from '../../components/BreadCrumbs/BreadCrumbs';
 import { useDispatch } from 'react-redux';
 import { useLinksMapData, setLinksMapDataAction } from "../../slices/DetailedSlices.ts";
+import { toast } from 'react-toastify';
+import { setVacancyFromRespAction, setCurrentRespDateAction, setCurrentRespIdAction, useCurrentRespId, useVacancyFromResp } from '../../slices/RespSlices.ts';
+import { Button } from 'react-bootstrap';
 
 export type ReceivedVacancyData = {
   id: number,
@@ -23,18 +26,21 @@ export type ReceivedVacancyData = {
 const SelectedRespPage = () => {
     const params = useParams();
     const id = params.id === undefined ? '' : params.id;
-    const [currentVac, setCurrentVac] = React.useState([])
+    const currentRespId = useCurrentRespId
+    // const [currentVac, setCurrentVac] = React.useState([])
     const dispatch = useDispatch();
     const linksMap = useLinksMapData();
+    const [currentStatus, setCurrentStatus] = React.useState("начало")
 
     const getCurrentResp = async () => {
         try {
-          const response = await axios(`http://localhost:8000/resp/${id}/`, {
+          const resp = await axios(`http://localhost:8001/resp/${id}/`, {
             method: 'GET',
             withCredentials: true,
           })
-
-          const newArr = response.data.vacancies.map((raw: ReceivedVacancyData) => ({
+          console.log("Мы получили  отвкт", resp);
+          setCurrentStatus(resp.data.response.status)
+          const newArr = resp.data.vacancies.map((raw: ReceivedVacancyData) => ({
             id: raw.id,
                 title: raw.title,
                 salary: raw.salary,
@@ -44,19 +50,70 @@ const SelectedRespPage = () => {
                 exp: raw.exp,
                 status: raw.status
             }));
-        setCurrentVac(newArr)
+        dispatch(setVacancyFromRespAction(newArr))
+        // setCurrentVac(newArr)
         } catch(error) {
           throw error;
         }
       }
+
+      const sendResp = async () => {
+        try {
+          await axios(`http://localhost:8001/resp/made/`, {
+            method: 'PUT',
+            withCredentials: true
+          })
+    
+          dispatch(setVacancyFromRespAction([]));
+          dispatch(setCurrentRespDateAction(''));
+          dispatch(setCurrentRespIdAction(undefined));
+          localStorage.setItem('vacancyFromResp', JSON.stringify([]));
+          // dispatch(setCurrentRespIdAction(null));
+          setCurrentStatus("made")
+          toast.success("Отправлено на проверку модератору");
+        } catch(error) {
+          throw error;
+        }
+      }
+    
+      const deleteResp = async () => {
+        try {
+          await axios(`http://localhost:8001/resp/delete`, {
+          method: 'DELETE',
+          withCredentials: true
+        })
+    
+        dispatch(setVacancyFromRespAction([]));
+        dispatch(setCurrentRespDateAction(''));
+        dispatch(setCurrentRespIdAction(undefined));
+        localStorage.setItem('vacancyFromResp', JSON.stringify([]));
+        toast.success("Отклик удален");
+        setCurrentStatus("deleted")
+        }
+        catch(error) {
+          throw error;
+        }
+        
+      }
+    
+      const handleSendButtonClick = () => {
+        sendResp();
+      }
+    
+      const handleDeleteButtonClick = () => {
+        deleteResp();
+      }
+    
 
     React.useEffect(() => {
         const newLinksMap = new Map<string, string>(linksMap); // Копирование старого Map
         newLinksMap.set("Детали отклика", '/resp/' + id);
         dispatch(setLinksMapDataAction(newLinksMap))
         getCurrentResp();
+        console.log("Статус в стаут", currentStatus)
+    }, [id])
 
-    }, [])
+    const currentVac = useVacancyFromResp()
 
     return (
         <div className={styles.application__page}>
@@ -66,7 +123,23 @@ const SelectedRespPage = () => {
                 <h1 className={styles['application__page-title']}>
                     Добавленные вакансии
                 </h1>
-                <VacancyTable flag={true} vacancies={currentVac} className={styles['application__page-table']}/>
+                {currentStatus != 'deleted' ? <div>
+                <div style={{justifyContent: "center"}}>
+                <VacancyTable
+                  flag={currentStatus !== "registered"}
+                  vacancies={currentVac}
+                  className={styles["application__page-info-table"]}
+                />
+                </div>
+                <div className={styles['application__page-info-btns']}>
+                <Button onClick={() => handleSendButtonClick()} className={styles['application__page-info-btn']} style={{ display: currentStatus === 'registered' ? 'block' : 'none' }}>Отправить</Button>
+              <Button onClick={() => handleDeleteButtonClick()} className={styles['application__page-info-btn']} style={{ display: currentStatus === 'registered' ? 'block' : 'none' }}>Удалить</Button>
+            </div>
+            </div>
+        : <h5 className={styles['application__page-subtitle']}>
+            В отклике нет вакансий
+          </h5>
+          }
             </div>
         </div>
     )

@@ -3,12 +3,10 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import styles from './VacTable.module.scss'
 import Table from 'react-bootstrap/Table';
-import Button from 'react-bootstrap/Button';
 import cn from 'classnames';
 import { useDispatch } from 'react-redux';
 import BasketIcon from '../../components/Icons/ArrowIcon/BasketIcon';
-import { useCurrentRespDate, useVacancyFromResp,
-  setCurrentRespDateAction, setVacancyFromRespAction, setCurrentRespIdAction } from "../../slices/RespSlices.ts";
+import { useVacancyFromResp,setVacancyFromRespAction} from "../../slices/RespSlices.ts";
 
 
 interface VacancyData {
@@ -28,25 +26,26 @@ export type VacTableProps = {
 const VacancyTable: React.FC<VacTableProps> = ({vacancies, className, flag}) => {
   const dispatch = useDispatch();
   const vacan = useVacancyFromResp()
+  // const isUserAuth = useIsAuth();
 
   const deleteVacancyFromResp = async (id: number) => {
     try {
-      const response = axios(`http://localhost:8000/rv/${id}/`, {
+      axios(`http://localhost:8001/rv/${id}/`, {
         method: 'DELETE',
         withCredentials: true
       })
 
-      console.log(id, vacan)
 
       dispatch(setVacancyFromRespAction(vacan.filter(vacancy => vacancy.id !== id)))
-
+      localStorage.setItem('vacancyFromResp', JSON.stringify([]));
       toast.success("Вакансия удалена");
     } catch(error) {
-      throw error;
+      console.log("ЧТо-то пошло не так")
     }
   }
 
   const handleDeleteButtonClick = (id: number) => {
+    console.log("Мы Решили удалить что-то", id)
     deleteVacancyFromResp(id)
   }
 

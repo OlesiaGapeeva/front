@@ -3,7 +3,7 @@ import cn from 'classnames'
 import styles from './ProfileWindow.module.scss';
 import Button from 'react-bootstrap/Button'
 //import ProfileLogoIcon from 'components/Icons/ProfileLogoIcon';
-import { Link } from 'react-router-dom';
+
 
 export type ModalProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
     onClick?: () => void;

@@ -7,8 +7,6 @@ import BreadCrumbs from '../../components/BreadCrumbs/BreadCrumbs';
 import { useVacancy, useLinksMapData, setVacancyAction, setLinksMapDataAction } from "../../slices/DetailedSlices.ts"
 import {useDispatch} from "react-redux";
 import axios from 'axios';
-import { useVacancyFromResp, setVacancyFromRespAction } from  "../../slices/RespSlices.ts";
-import { toast } from 'react-toastify';
 
 
 export type Vacancies = {
@@ -79,7 +77,6 @@ const VacancyPage = () => {
   const dispatch = useDispatch();
   const vacancy = useVacancy();
   const linksMap = useLinksMapData();
-  const vacancyFromResp = useVacancyFromResp();
 
   console.log("Линк", linksMap)
 
@@ -94,7 +91,7 @@ const VacancyPage = () => {
 
   const fetchVacancy = async () => {
       try {
-          const response = await axios.get(`http://localhost:8000/vacancies/${id}`);
+          const response = await axios.get(`http://localhost:8001/vacancies/${id}`);
           const jsonData = await response.data;
           dispatch(setVacancyAction({
             id: Number(jsonData.id),
@@ -132,41 +129,43 @@ const VacancyPage = () => {
       }
   }, []);
 
-  const postVacancyToResp = async (id: number) => {
-    try {
-        const response = await axios(`http://localhost:8000/vacancies/${id}/add/`, {
-            method: 'POST',
-            withCredentials: true,
-        })
-        const addedVacancy= {
-            id: response.data.id,
-            title: response.data.title,
-            image: response.data.image,
-            company: response.data.company,
-            salary: response.data.salary,
-            city: response.data.city,
-            exp: response.data.exp,
-            status: response.data.status
-        }
-        dispatch(setVacancyFromRespAction([...vacancyFromResp, addedVacancy]))
-        toast.success("Вакансия успешно добавлена в отклик!");
-    } catch (error) {
-        if (error instanceof Error) {
-            // Если error является экземпляром класса Error
-            toast.error("Вы не авторизированны");
-        } else {
-            // Если error не является экземпляром класса Error (что-то другое)
-            toast.error('Вакансия уже добавлена в отклик');
-        }
-    }
-  }
+  // const postVacancyToResp = async (id: number) => {
+  //   try {
+  //       const response = await axios(`http://localhost:8001/vacancies/${id}/add/`, {
+  //           method: 'POST',
+  //           withCredentials: true,
+  //       })
+  //       const addedVacancy= {
+  //           id: response.data.id,
+  //           title: response.data.title,
+  //           image: response.data.image,
+  //           company: response.data.company,
+  //           salary: response.data.salary,
+  //           city: response.data.city,
+  //           exp: response.data.exp,
+  //           status: response.data.status
+  //       }
+  //       dispatch(setVacancyFromRespAction([...vacancyFromResp, addedVacancy]))
+  //       toast.success("Вакансия успешно добавлена в отклик!");
+  //   } catch (error) {
+  //       if (error instanceof Error) {
+  //           // Если error является экземпляром класса Error
+  //           toast.error("Вы не авторизированны");
+  //       } else {
+  //           // Если error не является экземпляром класса Error (что-то другое)
+  //           toast.error('Вакансия уже добавлена в отклик');
+  //       }
+  //   }
+  // }
 
   return (
     <div className={styles.Detalied_Page}>
       <Header/>
       <nav aria-label="breadcrumb">
-                    <ol className="breadcrumb" style={{ marginTop: '58px' , width: '95.53vw', height: '26px',  backgroundColor: 'white'}}>
+                    <ol className="breadcrumb" style={{ marginTop: '58px' , height: '26px',  backgroundColor: 'white'}}>
+                    <div style={{marginLeft: '2vw'}}>
                     <BreadCrumbs links={linksMap}/>
+                    </div>
                     </ol>
                 </nav>
         <div className={styles.info}>

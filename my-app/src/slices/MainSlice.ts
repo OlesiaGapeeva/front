@@ -28,7 +28,6 @@ const dataSlice = createSlice({
       state.titleValue = action.payload
     },
     setVacancies(state, action: PayloadAction<VacancyData[]>) {
-      console.log('pay is', action.payload)
       state.vacancies = action.payload
     },
   },

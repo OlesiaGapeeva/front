@@ -7,9 +7,10 @@ import Button from 'react-bootstrap/Button'
 import BreadCrumbs from '../../components/BreadCrumbs/BreadCrumbs';
 import {useCurrentRespId } from  "../../slices/RespSlices.ts";
 import { useDispatch } from 'react-redux'
-import {useCurrentRespDate, useVacancyFromResp,setCurrentRespDateAction, setVacancyFromRespAction } from  "../../slices/RespSlices.ts";
+import { useVacancyFromResp,setCurrentRespDateAction, setVacancyFromRespAction, setCurrentRespIdAction } from  "../../slices/RespSlices.ts";
 import { useLinksMapData, setLinksMapDataAction } from "../../slices/DetailedSlices.ts";
 import VacancyTable from '../../components/VacTable/VacTable.tsx'
+import { useParams } from 'react-router-dom';
 
 export type ReceivedVacancyData = {
     id: number,
@@ -20,8 +21,9 @@ export type ReceivedVacancyData = {
 }
 
 const CurrentRespPage = () => {
+  const params = useParams();
   const dispatch = useDispatch();
-  const currentRespId = useCurrentRespId();
+  const currentRespId = params.id === undefined ? '' : params.id;
   const linksMap = useLinksMapData();
 
   console.log("Черновик", currentRespId)
@@ -29,15 +31,14 @@ const CurrentRespPage = () => {
 
   React.useEffect(() => {
     dispatch(setLinksMapDataAction(new Map<string, string>([
-      ['Текущий отклик', '/resp']
+      ['Текущий отклик', '/resp/id']
   ])))
-  if (currentRespId) {getResp(currentRespId)}
   }, [])
 
   const vacancies = useVacancyFromResp();
   const getResp = async (id: number) => {
     try {
-        const response = await axios(`http://localhost:8000/resp/${id}/`, {
+        const response = await axios(`http://localhost:8001/resp/${id}/`, {
             method: 'GET',
             withCredentials: true 
         });
@@ -55,13 +56,16 @@ const CurrentRespPage = () => {
 
   const sendResp = async () => {
     try {
-      const response = await axios(`http://localhost:8000/resp/made/`, {
+      await axios(`http://localhost:8001/resp/made/`, {
         method: 'PUT',
         withCredentials: true
       })
 
       dispatch(setVacancyFromRespAction([]));
       dispatch(setCurrentRespDateAction(''));
+      dispatch(setCurrentRespIdAction(undefined));
+      localStorage.setItem('vacancyFromResp', JSON.stringify([]));
+      // dispatch(setCurrentRespIdAction(null));
       toast.success("Отправлено на проверку модератору");
     } catch(error) {
       throw error;
@@ -70,13 +74,15 @@ const CurrentRespPage = () => {
 
   const deleteResp = async () => {
     try {
-      const response = await axios(`http://localhost:8000/resp/delete`, {
+      await axios(`http://localhost:8001/resp/delete`, {
       method: 'DELETE',
       withCredentials: true
     })
 
     dispatch(setVacancyFromRespAction([]));
     dispatch(setCurrentRespDateAction(''));
+    dispatch(setCurrentRespIdAction(undefined));
+    localStorage.setItem('vacancyFromResp', JSON.stringify([]));
     toast.success("Отклик удален");
     }
     catch(error) {
@@ -103,12 +109,10 @@ const CurrentRespPage = () => {
         </h1>
 
         {vacancies.length !=0 ? <div>
-          <h5 className={styles['application__page-subtitle']}>
-            У вас есть возможность удалять вакансии из заявки, удалить всю заявку или отправить заявку на проверку
-          </h5>
+
 
           <div className={styles['application__page-info']}>
-            <h3 className={styles['application__page-info-title']}>Ваши вакансии:</h3>
+            <h3 className={styles['application__page-info-title']}>Вакансии:</h3>
             <VacancyTable vacancies={vacancies} className={styles['application__page-info-table']}/>
 
             <div className={styles['application__page-info-btns']}>

@@ -15,16 +15,18 @@ interface VacancyData {
 }
 
 interface RespData {
-  id: number;
+  id: number | null;
   status: string;
   creation_date: string;
   editing_date: string;
   approving_date: string
+  full_name: string;
+  suite: number | null;
 }
 
 
 interface DataState {
-  currentRespId: number | null;
+  currentRespId?: number | null;
   currentRespDate: string;
   vacancyFromResp: VacancyData[];
   resp: RespData[];
@@ -39,19 +41,18 @@ const dataSlice = createSlice({
     resp: []
   } as DataState,
   reducers: {
-    setCurrentRespId(state, action: PayloadAction<number>) {
+    setCurrentRespId(state, action: PayloadAction<number| null |undefined>) {
       state.currentRespId = action.payload;
+      console.log("Current_Resp_id:", action.payload)
     },
     setCurrentRespDate(state, action: PayloadAction<string>) {
       state.currentRespDate = action.payload;
     },
     setVacancyFromResp(state, action: PayloadAction<VacancyData[]>) {
       state.vacancyFromResp = action.payload;
-      console.log('INFO', action.payload)
     },
     setResp(state, action: PayloadAction<RespData[]>) {
       state.resp = action.payload;
-      console.log('resp is', action.payload)
     }
   },
 });

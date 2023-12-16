@@ -48,7 +48,7 @@ const LoginPage: React.FC = () => {
 
             console.log('formdata is', formData)
         
-            const response: AxiosResponse = await axios.post('http://localhost:8000/login', formData, {
+            const response: AxiosResponse = await axios.post('http://localhost:8001/login', formData, {
                 withCredentials: true
             });
             console.log(response.data)

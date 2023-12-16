@@ -1,7 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import styles from './BreadCrumbs.module.scss'
-import ArrowIcon from '../Icons/ArrowIcon/ArrowIcon.tsx'
 
 export type BreadCrumbsProps = {
   links: Map<string, string>;
@@ -19,8 +18,11 @@ const BreadCrumbs: React.FC<BreadCrumbsProps> = ({links}) => {
           {key}
         </Link>
         {index !== links.size - 1 && 
-        <span className={styles['breadcrumbs__item-icon']}><ArrowIcon /></span>}
-      </span>
+        
+        <span>&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;&nbsp;</span>
+
+      //   <span className={styles['breadcrumbs__item-icon']}><ArrowIcon /></span>}
+        }</span>
     ))}
   </div>
   )
