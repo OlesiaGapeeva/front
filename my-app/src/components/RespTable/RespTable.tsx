@@ -8,6 +8,8 @@ import ModalWindow from '../ModalWindow/ModalWindow.tsx';
 import cn from 'classnames';
 
 import { Link } from 'react-router-dom';
+import { useIsAdmin } from '../../slices/AuthSlices.ts';
+import { toast } from 'react-toastify';
 
 
 interface RespData {
@@ -45,6 +47,7 @@ const RespTable: React.FC<VacancyTableProps> = ({resp, className}) => {
   //const dispatch = useDispatch();
   const [isModalWindowOpened, setIsModalWindowOpened] = useState(false);
   const [currentVacancies, setCurrentVacancies] = useState<VacancyData[]>([])
+  const IsAdmin = useIsAdmin();
 
   async (id: number) => {
     try {
@@ -65,10 +68,30 @@ const RespTable: React.FC<VacancyTableProps> = ({resp, className}) => {
     }
   }
 
-  // const handleDetailedButtonClick = (id: number) => {
-  //   getCurrentResp(id);
-  //   setIsModalWindowOpened(true)
-  // };
+  const Putstatus = async (id: number | null, st: string) => {
+    const data = {status: st };
+    try {
+      const response = axios(`http://localhost:8001/resp/${id}/confirm/`, {
+        method: 'PUT',
+        withCredentials: true,
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        data: JSON.stringify(data)
+      })
+
+      console.log(response)
+
+      toast.success("Статус изменен");
+    } catch(error) {
+      throw error;
+    }
+  }
+
+
+  const handleConfirmResponse = (id: number | null, status: string) => {
+    Putstatus(id, status)
+};
 
   return (
     <>
@@ -84,9 +107,11 @@ const RespTable: React.FC<VacancyTableProps> = ({resp, className}) => {
             <th>Соискатель</th>
             <th>Результат ревью</th>
             <th></th>
+            <th></th>
+            <th></th>
           </tr>
         </thead>
-        <tbody>
+        <tbody style={{alignItems:"center"}}>
           {resp.map((res: RespData, index: number) => (
             <tr key={res.id}>
               <td>{res.id}</td>
@@ -98,29 +123,45 @@ const RespTable: React.FC<VacancyTableProps> = ({resp, className}) => {
               <td>{res.suite}</td>
               <td className={styles.table__action}>
                 <Link to={`/resp/${res.id}`}>
-                <Button>Подробнее</Button>
+                <Button style={{alignItems:"center"}}>Подробнее</Button>
                 </Link>
                 {/* <Button onClick={() => handleDetailedButtonClick(application.id)}>Подробнее</Button> */}
               </td>
+              {IsAdmin && res.status == 'Сформировано' && (<td className={styles.table__action}>
+    <Button onClick={() => handleConfirmResponse(res.id, 'approved')}     style={{
+                    backgroundColor: 'rgb(231, 230, 230)',
+                    borderColor:"gray",
+                    borderRadius:"8px",
+                    height: "30px",
+                    justifyContent: "center",
+                    marginBottom:"3px"
+                    
+                }}>
+    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="gray" className="bi bi-check-lg" viewBox="0 4 16 16" >
+  <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425a.247.247 0 0 1 .02-.022"/>
+</svg>
+    </Button>
+    <div>
+    <Button onClick={() => handleConfirmResponse(res.id, 'denied')}  style={{
+                    backgroundColor: 'rgb(231, 230, 230)',
+                    borderColor:"gray",
+                    borderRadius:"8px",
+                    height: "30px",
+                    justifyContent: "center"
+                    
+                }}>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="gray" className="bi bi-check-lg" viewBox="-2 3 20 20">
+  <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+</svg>
+    </Button>
+    </div>
+</td>)
+              }
             </tr>
           ))}
         </tbody>
       </Table>
     </div>
-
-      <ModalWindow handleBackdropClick={() => setIsModalWindowOpened(false)} className={styles.modal} active={isModalWindowOpened}>
-      <h3 className={styles.modal__title}>Добавленные вакансии</h3>
-      <div className={styles.modal__list}>
-        {currentVacancies.map((vacancy: VacancyData) => (
-          <div className={styles['modal__list-item']}>
-            <div className={styles['modal__list-item-title']}>
-              {vacancy.title} "{vacancy.title}"
-            </div>
-            <b>{vacancy.company}</b>
-          </div>
-        ))}
-      </div>
-      </ModalWindow>
     </>
   );
 }

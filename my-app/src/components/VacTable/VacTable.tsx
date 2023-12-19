@@ -44,6 +44,7 @@ const VacancyTable: React.FC<VacTableProps> = ({vacancies, className, flag}) => 
     }
   }
 
+
   const handleDeleteButtonClick = (id: number) => {
     console.log("Мы Решили удалить что-то", id)
     deleteVacancyFromResp(id)

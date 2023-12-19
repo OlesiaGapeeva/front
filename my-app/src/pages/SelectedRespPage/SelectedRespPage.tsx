@@ -26,7 +26,7 @@ export type ReceivedVacancyData = {
 const SelectedRespPage = () => {
     const params = useParams();
     const id = params.id === undefined ? '' : params.id;
-    const currentRespId = useCurrentRespId
+    const currentRespId = useCurrentRespId()
     // const [currentVac, setCurrentVac] = React.useState([])
     const dispatch = useDispatch();
     const linksMap = useLinksMapData();
@@ -56,7 +56,34 @@ const SelectedRespPage = () => {
           throw error;
         }
       }
-
+      const hr = async () => {
+        console.log("мы получили",id)
+        // axios.get('http://localhost:8001/async_task', {
+        //         params: {
+        //           resp_id: id // Значение resp_id, которое нужно передать
+        //         }
+        //       })
+        //         .then(response => {
+        //           // Обработка успешного ответа
+        //           dispatch(setCurrentRespIdAction(undefined));
+        //           console.log(response.data); // Вывод ответа в консоль
+        //         })
+        //         .catch(error => {
+        //           // Обработка ошибки
+        //           console.error(error);
+        //         });
+        try {
+          axios(`http://localhost:8001/async_task/${id}`, {
+                method: 'GET',
+                withCredentials: true,
+          });
+          console.log("отправили запрос")
+          dispatch(setCurrentRespIdAction(undefined));
+        } catch(error) {
+          console.log("ЧТо-то пошло не так")
+        }
+      }
+      
       const sendResp = async () => {
         try {
           await axios(`http://localhost:8001/resp/made/`, {
@@ -66,7 +93,7 @@ const SelectedRespPage = () => {
     
           dispatch(setVacancyFromRespAction([]));
           dispatch(setCurrentRespDateAction(''));
-          dispatch(setCurrentRespIdAction(undefined));
+          // dispatch(setCurrentRespIdAction(undefined));
           localStorage.setItem('vacancyFromResp', JSON.stringify([]));
           // dispatch(setCurrentRespIdAction(null));
           setCurrentStatus("made")
@@ -98,6 +125,8 @@ const SelectedRespPage = () => {
     
       const handleSendButtonClick = () => {
         sendResp();
+        hr();
+        getCurrentResp();
       }
     
       const handleDeleteButtonClick = () => {

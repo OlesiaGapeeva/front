@@ -11,6 +11,7 @@ interface UserData {
 interface DataState {
     user: UserData,
     isAuth: boolean,
+    isAdmin: boolean,
 }
 
 const dataSlice = createSlice({
@@ -18,6 +19,7 @@ const dataSlice = createSlice({
   initialState: {
     user: {},
     isAuth: false,
+    isAdmin: false,
   } as DataState,
   reducers: {
     setUser(state, action: PayloadAction<UserData>) {
@@ -26,7 +28,10 @@ const dataSlice = createSlice({
     },
     setIsAuth(state, action: PayloadAction<boolean>) {
       state.isAuth = action.payload
-      console.log(`is auth: ${action.payload}`)
+    },
+    setIsAdmin(state, action: PayloadAction<boolean>) {
+      state.isAdmin = action.payload
+      console.log(`is admin: ${action.payload}`)
     }
   },
 });
@@ -37,9 +42,13 @@ export const useUser = () =>
 export const useIsAuth = () =>
   useSelector((state: { authData: DataState }) => state.authData.isAuth);
 
+export const useIsAdmin = () =>
+  useSelector((state: { authData: DataState }) => state.authData.isAdmin);
+
 export const {
   setUser: setUserAction,
   setIsAuth: setIsAuthAction,
+  setIsAdmin: setIsAdminAction,
 } = dataSlice.actions;
 
 export default dataSlice.reducer;

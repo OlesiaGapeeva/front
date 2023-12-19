@@ -31,13 +31,14 @@ import RespListPage from './pages/RespListPage/RespListPage';
 import axios, {AxiosResponse} from 'axios';
 import Cookies from "universal-cookie";
 import {useDispatch} from "react-redux";
-import {setUserAction, setIsAuthAction, useIsAuth} from "./slices/AuthSlices";
+import {setUserAction, setIsAuthAction, useIsAuth, useIsAdmin, setIsAdminAction} from "./slices/AuthSlices";
 import {setVacanciesAction} from "./slices/MainSlice";
 import { setCurrentRespIdAction } from "./slices/RespSlices"
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { mockVacancies} from "./consts";
 import { setCurrentRespDateAction, setVacancyFromRespAction } from "./slices/RespSlices"
+import AdminPage from './pages/AdminPage/AdminPage';
 //import { useCurrentRespId } from "./slices/RespSlices"
 
 const cookies = new Cookies();
@@ -51,11 +52,14 @@ export type ReceivedVacancyData = {
   exp: string | undefined | null,
   image: string | undefined | null;
   status:string;
+  adress: string | undefined | null,
+  info: string | undefined |null
 }
 
 function App() {
   const dispatch = useDispatch();
   const isAuth = useIsAuth();
+  const isAdmin = useIsAdmin();
 
   const getInitialUserInfo = async () => {
     console.log(cookies.get("session_id"))
@@ -77,6 +81,7 @@ function App() {
         phoneNumber: response.data.phone_number,
         isSuperuser: response.data.is_superuser
       }))
+      dispatch(setIsAdminAction(response.data.is_superuser))
       
     } 
     catch {
@@ -92,9 +97,6 @@ function App() {
             
         });
         console.log(response)
-        if (response.data.resp_id) {
-            console.log("Что-то есть")
-        }
         const vacancies = response.data.vacancies;
         if (response.data.resp_id) {
           dispatch(setCurrentRespIdAction(response.data.resp_id))
@@ -107,7 +109,9 @@ function App() {
           company: raw.company,
           image: raw.image,
           exp: raw.exp,
-          status: raw.status
+          status: raw.status,
+          info: raw.info,
+          adress: raw.adress
         }));
         dispatch(setVacanciesAction(newArr));
         
@@ -132,7 +136,9 @@ const getCurrentResp = async (id: number) => {
       company: raw.company,
       image: raw.image,
       exp: raw.exp,
-      status: raw.status
+      status: raw.status,
+      info: raw.info,
+      adress: raw.adress
   }));
 
   dispatch(setVacancyFromRespAction(newArr))
@@ -164,6 +170,7 @@ const getCurrentResp = async (id: number) => {
             <Route path="/resp/:id/" element={<SelectedRespPage />} />
           </>
         )}
+        {isAdmin && <Route path='/employee' element={<AdminPage />} />}
         <Route path="*" element={<Navigate to="/vacancies" replace />} />
       </Routes>
     </HashRouter>

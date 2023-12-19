@@ -78,7 +78,6 @@ const VacancyPage = () => {
   const vacancy = useVacancy();
   const linksMap = useLinksMapData();
 
-  console.log("Линк", linksMap)
 
 
   const params = useParams();

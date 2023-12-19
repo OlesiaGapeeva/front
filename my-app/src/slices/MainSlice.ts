@@ -9,7 +9,9 @@ interface VacancyData {
     company: string,
     exp: string,
     image?: string | undefined | null,
-    status: string;
+    status: string,
+    info?: string,
+    adress?: string |null
 }
 
 interface DataState {
@@ -29,6 +31,7 @@ const dataSlice = createSlice({
     },
     setVacancies(state, action: PayloadAction<VacancyData[]>) {
       state.vacancies = action.payload
+      console.log('ВАКАНСИИ', action.payload)
     },
   },
 });

@@ -30,6 +30,10 @@ interface DataState {
   currentRespDate: string;
   vacancyFromResp: VacancyData[];
   resp: RespData[];
+  userName?: string,
+  status?: string,
+  end?: string,
+  start?: string
 }
 
 const dataSlice = createSlice({
@@ -38,7 +42,11 @@ const dataSlice = createSlice({
     currentRespId: null,
     currentRespDate: '',
     vacancyFromResp: [],
-    resp: []
+    resp: [],
+    userName: undefined,
+    start: undefined,
+    end: undefined,
+    status:undefined,
   } as DataState,
   reducers: {
     setCurrentRespId(state, action: PayloadAction<number| null |undefined>) {
@@ -53,7 +61,19 @@ const dataSlice = createSlice({
     },
     setResp(state, action: PayloadAction<RespData[]>) {
       state.resp = action.payload;
-    }
+    },
+    setCurrentUserFilter(state, action: PayloadAction<string>) {
+      state.userName = action.payload;
+    },
+    setStartFilter(state, action: PayloadAction<string>) {
+      state.start = action.payload;
+    },
+    setEndFilter(state, action: PayloadAction<string>) {
+      state.end = action.payload;
+    },
+    setStatusFilter(state, action: PayloadAction<string>) {
+      state.status = action.payload;
+    },
   },
 });
 
@@ -68,12 +88,25 @@ export const useVacancyFromResp = () =>
 
 export const useResp = () =>
   useSelector((state: { respData: DataState }) => state.respData.resp);
+export const useStartFilter = () =>
+  useSelector((state: { respData: DataState }) => state.respData.start);
+
+export const useEndFilter = () =>
+  useSelector((state: { respData: DataState }) => state.respData.end);
+export const useStatusFilter = () =>
+  useSelector((state: { respData: DataState }) => state.respData.status);
+export const useCurrentUserFilter = () =>
+  useSelector((state: { respData: DataState }) => state.respData.userName);
 
 export const {
     setCurrentRespId: setCurrentRespIdAction,
     setCurrentRespDate: setCurrentRespDateAction,
     setVacancyFromResp: setVacancyFromRespAction,
-    setResp: setRespAction
+    setResp: setRespAction,
+    setCurrentUserFilter: setCurrentUserFilterAction,
+    setStartFilter: setStartFilterAction,
+    setEndFilter: setEndilterAction,
+    setStatusFilter: setStatusFilterAction,
 
 } = dataSlice.actions;
 

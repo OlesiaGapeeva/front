@@ -2,7 +2,7 @@
 
 .applications__page {
     &-wrapper {
-        padding-top: 90px;
+        padding-top: 50px;
         max-width: 1240px;
         margin: 0 auto;
     }
@@ -32,88 +32,69 @@
         margin-bottom: 50px;
 }
 
+.form {
+    max-width: 1000px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    justify-content: center; /* Добавляем это свойство */
+    
+    &__item {
+      width: 250px;
+    }
+  
+    &__input {
+      height: 30px;
+      background-color: rgb(231, 230, 230);
+      border-color: gray;
+      font-size: 14px;
+      margin-bottom: 15px;
+    }
+  
+    &__textarea {
+        max-height: 100px;
+        min-height: 100px;
+        margin-bottom: 15px;
+    }
 
-// @include tablet {
-//     .applications__page-wrapper {
-//       max-width: 1100px;
-//     }
-// }
-  
-// @include largeTablet {
-//     .applications__page-wrapper {
-//       max-width: 900px;
-//     }
-// }
-  
-// @include mediumTablet {
-//     .applications__page {
-//         &-wrapper {
-//             max-width: 800px;
-//         }
+    &__btn {
+        width: 150px;
+    }
+    margin-bottom: 50px;
+}
 
-//         &-subtitle {
-//             max-width: 100%;
-//         }
-//     }
-// }
-  
-// @include smallTablet {
-//     .applications__page {
-//         &-wrapper {
-//             max-width: 700px;
-//         }
+.dropdown {
+    width: 250px;
+    margin-bottom: 15px;
+    height: 30px;
+    background-color: rgb(231, 230, 230);
+    border-color: gray;
+    gap: 20px;
 
-//         &-subtitle {
-//             font-size: 14px;
-//             margin-bottom: 20px;
-//         }
-//     }
-// }
+    &__toggle {
+        height: 30px;
+        width: 100%;
+        text-align-last: left;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-right: 1rem;
+        font-size: 14px;
+        background-color: rgb(231, 230, 230);
+        border-color: gray;
+        color: gray;
 
-// @include mobileLandscape {
-//     .applications__page {
-//         &-wrapper {
-//             max-width: 600px;
-//         }
 
-//         &-title {
-//             font-size: 24px;
-//         }
-//     }
-// }
-  
-// @include mobile {
-//     .applications__page {
-//         &-wrapper {
-//             max-width: 500px;
-//         }
-//     }
-// }
-  
-// @include smallMobile {
-//     .applications__page {
-//         &-wrapper {
-//             max-width: 450px;
-//         }
-//     }
-// }
-  
-// @include extraSmallMobile {
-//     .applications__page-wrapper {
-//       max-width: 380px;
-//     }
-// }
-  
-// @include ultraSmallMobile {
-//     .applications__page {
-//         &-wrapper {
-//             max-width: 330px;
-//         }
-//     }
-// }
-  
-// @include tinyMobile {
-//     .applications__page-wrapper {
-//       max-width: 290px;
-//     }
-// }
+
+    &__menu {
+        width: 100%;
+        text-align-last: left;
+        max-height: 200px;
+        overflow: auto;
+        right: 0;
+        top: 0;
+        background-color: gray;
+
+    }
+    }}

@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 import styles from './header.module.scss'
 import axios from 'axios';
 import {useDispatch} from "react-redux";
-import {useIsAuth, setIsAuthAction, setUserAction} from "../../slices/AuthSlices.ts";
+import {useIsAuth, setIsAuthAction, setUserAction, useIsAdmin} from "../../slices/AuthSlices.ts";
 import {setCurrentRespDateAction, setCurrentRespIdAction, setVacancyFromRespAction, useCurrentRespId} from "../../slices/RespSlices.ts";
 const cookies = new Cookies();
 import Cookies from "universal-cookie";
@@ -18,6 +18,7 @@ const Header: React.FC = () => {
     const [isProfileButtonClicked, setIsProfileButtonClicked] = useState(false);
     const [IsResp, setIsResp] = useState(false);
     const isUserAuth = useIsAuth();
+    const IsAdmin = useIsAdmin();
     const resp = useCurrentRespId();
     const handleProfileButtonClick = () => {
         setIsProfileButtonClicked(!isProfileButtonClicked);
@@ -98,6 +99,8 @@ const Header: React.FC = () => {
           </div>
           <Link to='/vacancies' className={styles.header__logo}>Сервис по поиску вакансий</Link>
           <div className={styles.header__profileWrapper}>
+            {IsAdmin &&  <Link to="/employee" className={styles.header__profile}>Работодатель</Link>}
+            <span className={styles.header__spacer}>&nbsp;&nbsp;&nbsp;</span> {/* Увеличенный пробел */}
           {isUserAuth && <Link to="/responses" className={styles.header__profile}>Список откликов</Link>}
            <span className={styles.header__spacer}>&nbsp;&nbsp;&nbsp;</span> {/* Увеличенный пробел */}
            {isUserAuth && IsResp && (

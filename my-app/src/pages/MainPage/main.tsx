@@ -42,7 +42,9 @@ export type ReceivedVacancyData = {
     company: string,
     exp: string | undefined | null,
     image: string | undefined | null;
-    status:string;
+    status:string,
+    adress: string | undefined | null,
+    info: string | undefined |null
 }
 
 const mockVacancies = [
@@ -96,7 +98,6 @@ export type ReceivedUserData = {
     const MainPage = () => {
         const dispatch = useDispatch()
         const titleValue = useTitleValue();
-        console.log(titleValue)
         const resp = useCurrentRespId
         const vacancies = useVacancies();
         const vacancyFromResp = useVacancyFromResp();
@@ -132,7 +133,9 @@ export type ReceivedUserData = {
                 company: raw.company,
                 image: raw.image,
                 exp: raw.exp,
-                status: raw.status
+                status: raw.status,
+                info: raw.info,
+                adress: raw.adress
             }));
             const resp_id = response.data.resp_id
             dispatch(setVacancyFromRespAction(newArr))
@@ -165,7 +168,9 @@ export type ReceivedUserData = {
                     company: raw.company,
                     image: raw.image,
                     exp: raw.exp,
-                    status: raw.status
+                    status: raw.status,
+                    info: raw.info,
+                    adress: raw.adress
                 }));
                 dispatch(setVacanciesAction(newArr));
             }
@@ -195,7 +200,9 @@ export type ReceivedUserData = {
                     salary: response.data.salary,
                     city: response.data.city,
                     exp: response.data.exp,
-                    status: response.data.status
+                    status: response.data.status,
+                    info: response.data.info,
+                    adress: response.data.adress
                 }
                 
                 
