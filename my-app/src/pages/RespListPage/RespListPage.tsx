@@ -12,7 +12,7 @@ import { useIsAdmin } from '../../slices/AuthSlices.ts'
 import Form from 'react-bootstrap/Form';
 import { Button, Dropdown} from 'react-bootstrap'
 
-const statuses = ["Не выбрано", "Черновик",'Сформировано', "Отклонено", "Одобрено"]
+const statuses = ["Не выбрано", 'Сформировано', "Отклонено", "Одобрено"]
 
 export type ReceivedRespData = {
     user: any
@@ -70,6 +70,7 @@ const RespListPage = () => {
           if (userFilter) {
             filteredData = rawData
               .filter((raw: ReceivedRespData) => raw.status !== 'delited')
+              .filter((raw: ReceivedRespData) => raw.status !== 'registered')
               .filter((raw: ReceivedRespData) => raw.user.full_name.toLowerCase().includes(userFilter.toLowerCase()))
               .map((raw: ReceivedRespData) => ({
                 id: raw.id,
@@ -83,6 +84,7 @@ const RespListPage = () => {
           } else {
             filteredData = rawData
               .filter((raw: ReceivedRespData) => raw.status !== 'delited')
+              .filter((raw: ReceivedRespData) => raw.status !== 'registered')
               .map((raw: ReceivedRespData) => ({
                 id: raw.id,
                 status: getStatusTranslation(raw.status),
@@ -176,21 +178,22 @@ const RespListPage = () => {
                 <BreadCrumbs links={linksMap}></BreadCrumbs>
                 <h2 className={styles['applications__page-title']}>История откликов</h2>
                 {IsAdmin &&(<Form.Group controlId="name" style={{
-                alignItems: "center",
-                justifyContent: "center",
-                display: "flex",
-                flexDirection: "row",
-                flexWrap: "wrap",
-                justifyItems: "center", 
+                //alignItems: "center",
+                // justifyContent: "center",
+                // display: "flex",
+                // flexDirection: "row",
+                // flexWrap: "wrap",
+                // justifyItems: "center", 
                 gap: "20px"
             }}>
+              <div style={{display: "flex"}}>
                  <div className={styles.form__item}>
                 <Form.Control onChange={(event: ChangeEvent<HTMLInputElement>) => {dispatch(setStartFilterAction(event.target.value))}} value={startTime} className={styles.form__input} type="text" placeholder="Начальная дата (Год-Месяц-День)" />
               </div>
               <div className={styles.form__item}>
                 <Form.Control onChange={(event: ChangeEvent<HTMLInputElement>) => {dispatch(setEndilterAction(event.target.value))}} value={endTime} className={styles.form__input} type="text" placeholder="Конечная дата (Год-Месяц-День)" />
-              </div>
-              <Dropdown className={styles['dropdown']} onSelect={handleCategorySelect}>
+                </div>
+              <Dropdown className={styles['dropdown']} onSelect={handleCategorySelect} style={{marginLeft: "200px"   }}>
                 <Dropdown.Toggle
                     className={styles['dropdown__toggle']}
 
@@ -205,7 +208,10 @@ const RespListPage = () => {
                         </Dropdown.Item>
                     ))}
                     </Dropdown.Menu>
+                  
                 </Dropdown>
+                
+                </div>
                 <Form.Control
                 type="text"
                 placeholder="Введите имя пользователя"
@@ -213,7 +219,8 @@ const RespListPage = () => {
                     backgroundColor: 'rgb(231, 230, 230)',
                     height: '30px',
                     width: '60vw',
-                    marginBottom: '40px'
+                    marginBottom: '40px',
+                    marginLeft: "210px"
                 }}
                 value={userFilter} 
                 onChange={handleUserValueChange}

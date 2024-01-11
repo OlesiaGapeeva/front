@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ChangeEvent } from 'react';
 import { toast } from 'react-toastify';
 import Form from 'react-bootstrap/Form';
@@ -16,6 +16,7 @@ import { useIsAuth} from "../../slices/AuthSlices.ts";
 import {setCurrentRespIdAction, useCurrentRespId} from "../../slices/RespSlices.ts";
 import { useLinksMapData, setLinksMapDataAction} from "../../slices/DetailedSlices.ts";
 import { useVacancyFromResp, setVacancyFromRespAction } from  "../../slices/RespSlices.ts";
+import { Link } from 'react-router-dom';
 //import Cookies from "universal-cookie";
 
 
@@ -98,10 +99,12 @@ export type ReceivedUserData = {
     const MainPage = () => {
         const dispatch = useDispatch()
         const titleValue = useTitleValue();
-        const resp = useCurrentRespId
+        const resp = useCurrentRespId()
         const vacancies = useVacancies();
         const vacancyFromResp = useVacancyFromResp();
         const isUserAuth = useIsAuth();
+        const [IsResp, setIsResp] = useState(false);
+ 
         
         
 
@@ -115,8 +118,9 @@ export type ReceivedUserData = {
             const storedVacancyFromResp = localStorage.getItem('vacancyFromResp');
             if (storedVacancyFromResp) {
                 dispatch(setVacancyFromRespAction(JSON.parse(storedVacancyFromResp)));
+            setIsResp(!!resp)
   }
-        }, [])
+        }, [resp])
         
 
         const getCurrentResp = async (id: number) => {
@@ -229,15 +233,7 @@ export type ReceivedUserData = {
             dispatch(setTitleValueAction(event.target.value));
         };
     
-    
-        // const handleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-        //     event.preventDefault();
-        // };
 
-        // const handleTitleValueChange = (event: ChangeEvent<HTMLInputElement>) => {
-        //     setTitleValue(event.target.value);
-        // };
-    
     
     return (
         <div className={styles.main_page} style={{
@@ -249,8 +245,23 @@ export type ReceivedUserData = {
             <ol className="breadcrumb" style={{ marginTop: '100px' , height: '35px',  backgroundColor: 'white'}}>
             <div style={{marginLeft: '2vw', marginTop: '-40px'}}>
             <BreadCrumbs links={linksMap}></BreadCrumbs>
+            <div style={{marginLeft: "1100px", marginTop: "-60px"}}>
+            {isUserAuth && IsResp && (
+  <Link to={`/resp/${resp}`} className={styles.header__profile}>
+    <Button>
+    Отклик
+    </Button>
+  </Link>
+)}
+{isUserAuth && !IsResp && (
+  <div  style={{  color: '#32c86c' }}>
+    <Button style={{backgroundColor:"red", border:"none" }}>
+    Отклик
+    </Button></div>
+)}
+</div>
             </div>
-            <div style={{display: 'flex', justifyContent: 'center', marginTop: "0px"}}>
+            <div style={{display: 'flex', justifyContent: 'center', marginTop: "-30px"}}>
             <Form.Group controlId="name" style={{
                 alignItems: "center",
                 justifyContent: "center",
@@ -274,7 +285,7 @@ export type ReceivedUserData = {
                     // outline: 'none',
                     // marginRight: '5px',
                     // textAlign: 'center',
-                    marginLeft: "4.1vw",
+                    marginLeft: "10.1vw",
                     // justifyContent: "center"
                 }}
                 value={titleValue} 
@@ -292,6 +303,7 @@ export type ReceivedUserData = {
                 borderRadius: '10px',
                 width: '200px',
                 marginLeft: '20px',
+                marginTop: '20px',
                 fontFamily: 'sans-serif',
                 justifyContent: 'center', // Center the text horizontally
                 alignItems: 'center', // Center the text vertically

@@ -53,6 +53,7 @@ export type VacancyData = {
 const CustomTable: React.FC<TableData> = ({columns, data, className}) => {
     const vacancies = useVacancies()
     const dispatch = useDispatch()
+    const sth = 0;
     const [isImageModalWindowOpened, setIsImageModalWindowOpened] = useState(false)
     const [currentVacanciesId, setCurrentVacanciesId] = useState<number>()
     const [selectedImage, setSelectedImage] = useState<File | null>(null);
@@ -340,109 +341,8 @@ const CustomTable: React.FC<TableData> = ({columns, data, className}) => {
         <div className={`${styles.table__container} ${className}`}>
         <div className={`${styles.table__add} ${className}`}>
           <h6>
-        <Link  onClick={() => handleCreateButtonClick()} to={""}>Новая вакансия</Link>
+        <Link  onClick={() => handleCreateButtonClick()} to={`/edit/${sth}`}>Новая вакансия</Link>
         </h6>
-        {createRow && (
-           <div>
-
-          <input
-              type="text"
-              onChange={(event) => {
-                const updatedDictionary = {
-                  ...dictionary,
-                  ['title']: event.target.value
-                };
-                setDictionary(updatedDictionary);
-              }}
-              placeholder="Название*"
-              required
-            />
-
-            <input
-              type="number"
-              onChange={(event) => {
-                const updatedDictionary = {
-                  ...dictionary,
-                  ['salary']: Number(event.target.value)
-                };
-                setDictionary(updatedDictionary);
-              }}
-              placeholder="Зарплата*"
-              required
-            />
-            <input
-              type="text"
-              onChange={(event) => {
-                const updatedDictionary = {
-                  ...dictionary,
-                  ['city']: event.target.value
-                };
-                setDictionary(updatedDictionary);
-              }}
-              placeholder="Город*"
-            />
-            <input
-              type="text"
-              onChange={(event) => {
-                const updatedDictionary = {
-                  ...dictionary,
-                  ['adress']: event.target.value
-                };
-                setDictionary(updatedDictionary);
-              }}
-              placeholder="Полный адрес"
-            />
-            <input
-              type="text"
-              onChange={(event) => {
-                const updatedDictionary = {
-                  ...dictionary,
-                  ['company']: event.target.value
-                };
-                setDictionary(updatedDictionary);
-              }}
-              placeholder="Компания*"
-              required
-            />
-            <input
-              type="text"
-              onChange={(event) => {
-                const updatedDictionary = {
-                  ...dictionary,
-                  ['exp']: event.target.value
-                };
-                setDictionary(updatedDictionary);
-              }}
-              placeholder="Опыт работы*"
-            />
-            <textarea
-             
-             onChange={(event) => {
-              const updatedDictionary = {
-                ...dictionary,
-                ['info']: event.target.value
-              };
-              setDictionary(updatedDictionary);
-            }}
-             placeholder="Дополнительная информация"
-           />
-           {/* Добавьте остальные поля */}
-           <button type='submit' className='btn'  onClick={() => postVacancy()}>Сохранить</button>
-           <button className='btn' onClick={() => {
-                      setCreateRow(false);
-                      setDictionary({           id: 0,
-                        title: "",
-                        salary: 0,
-                        city: "",
-                        company: "",
-                        exp: "",
-                        image: null,
-                        status: "",
-                        info: undefined,
-                        adress: null,});
-                  }}>Отменить</button>
-         </div>
-        )}
         </div>
         <Table>
             <thead>
@@ -491,15 +391,14 @@ const CustomTable: React.FC<TableData> = ({columns, data, className}) => {
                     {/* <EditIcon onClick={() => handleEditButtonClick(row)}/> */}
                     {editableRows!=row.id && (
                       <td className={styles.table__action}>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-paperclip" viewBox="0 0 16 16" onClick={() => handleImageButtonClick(row)}>
-                    <path d="M4.5 3a2.5 2.5 0 0 1 5 0v9a1.5 1.5 0 0 1-3 0V5a.5.5 0 0 1 1 0v7a.5.5 0 0 0 1 0V3a1.5 1.5 0 1 0-3 0v9a2.5 2.5 0 0 0 5 0V5a.5.5 0 0 1 1 0v7a3.5 3.5 0 1 1-7 0z"/>
-                  </svg>
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-trash3" viewBox="0 0 16 16" onClick={() => handleDeleteButtonClick(row.id)}>
                     <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5"/>
                   </svg>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-pencil" viewBox="0 0 16 16" onClick={() => handleEditButtonClick(row, row.id)}>
+                  <Link  to={`/edit/${row.id}`} style={{color:"black"}}>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-pencil" viewBox="0 0 16 16">
                   <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
                 </svg>
+                </Link>
                 </td>
                     )}
                   {editableRows==row.id && (

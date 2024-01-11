@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 import styles from './header.module.scss'
 import axios from 'axios';
 import {useDispatch} from "react-redux";
-import {useIsAuth, setIsAuthAction, setUserAction, useIsAdmin} from "../../slices/AuthSlices.ts";
+import {useIsAuth, setIsAuthAction, setUserAction, useIsAdmin, useUser} from "../../slices/AuthSlices.ts";
 import {setCurrentRespDateAction, setCurrentRespIdAction, setVacancyFromRespAction, useCurrentRespId} from "../../slices/RespSlices.ts";
 const cookies = new Cookies();
 import Cookies from "universal-cookie";
@@ -18,6 +18,7 @@ const Header: React.FC = () => {
     const [isProfileButtonClicked, setIsProfileButtonClicked] = useState(false);
     const [IsResp, setIsResp] = useState(false);
     const isUserAuth = useIsAuth();
+    const user = useUser();
     const IsAdmin = useIsAdmin();
     const resp = useCurrentRespId();
     const handleProfileButtonClick = () => {
@@ -40,9 +41,9 @@ const Header: React.FC = () => {
     //   }
     // }, [resp]);
 
-    useEffect(() => {
-      setIsResp(!!resp);
-    }, [resp]);
+    // useEffect(() => {
+    //   setIsResp(!!resp);
+    // }, [resp]);
 
     const logout = async () => {
         try {
@@ -99,24 +100,28 @@ const Header: React.FC = () => {
           </div>
           <Link to='/vacancies' className={styles.header__logo}>Сервис по поиску вакансий</Link>
           <div className={styles.header__profileWrapper}>
-            {IsAdmin &&  <Link to="/employee" className={styles.header__profile}>Работодатель</Link>}
+            {IsAdmin && isUserAuth && <Link to="/employee" className={styles.header__profile}>Работодатель</Link>}
             <span className={styles.header__spacer}>&nbsp;&nbsp;&nbsp;</span> {/* Увеличенный пробел */}
           {isUserAuth && <Link to="/responses" className={styles.header__profile}>Список откликов</Link>}
            <span className={styles.header__spacer}>&nbsp;&nbsp;&nbsp;</span> {/* Увеличенный пробел */}
-           {isUserAuth && IsResp && (
+           {/* {isUserAuth && IsResp && (
   <Link to={`/resp/${resp}`} className={styles.header__profile}>
     Отклик
   </Link>
 )}
 {isUserAuth && !IsResp && (
   <div style={{ color: "#32c86c" }}>Отклик</div>
-)}
+)} */}
             {/* <Link to="/registration" className={styles.header__profile}>Личный кабинет</Link> */}
-            <span className={styles.header__spacer}>&nbsp;&nbsp;&nbsp;</span> {/* Увеличенный пробел */}
             {isUserAuth && (
+              <>
+            <div className={styles.header__profile}> {user.fullname}</div>
+            <span className={styles.header__spacer}>&nbsp;&nbsp;&nbsp;</span> {/* Увеличенный пробел */}
             <div className={styles.header__profile} onClick={handleSubmit}>
               Выход
             </div>
+            </>
+            
           )}
             {isUserAuth ? <div className={styles.header__profile} onClick={handleProfileButtonClick}/> : <Link to='/login' className={styles.header__profile}>Вход<div/></Link>}
           </div>

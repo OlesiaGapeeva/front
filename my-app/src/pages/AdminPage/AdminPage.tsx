@@ -56,7 +56,7 @@ const AdminPage = () => {
 
     
     React.useEffect(() => {
-    }, [])
+    }, [vacancies])
 
     return (
         <div className={styles.admin__page}>

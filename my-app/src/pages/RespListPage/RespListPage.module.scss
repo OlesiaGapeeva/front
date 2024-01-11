@@ -38,10 +38,12 @@
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 20px;
+    
     justify-content: center; /* Добавляем это свойство */
     
     &__item {
       width: 250px;
+      margin-right: 20px;
     }
   
     &__input {
@@ -65,10 +67,10 @@
 }
 
 .dropdown {
+    margin-top: 20px;
     width: 250px;
-    margin-bottom: 15px;
     height: 30px;
-    background-color: rgb(231, 230, 230);
+    // background-color: rgb(231, 230, 230);
     border-color: gray;
     gap: 20px;
 

@@ -23,7 +23,6 @@ import MainPage from './pages/MainPage/main';
 import DetailedPage from './pages/DetailedPage/detailed';
 import RegistrationPage from './pages/RegistrationPage/RegistrationPage';
 import LoginPage from './pages/LoginPage/LoginPage';
-import CurrentRespPage from './pages/CurrenRespPage/CurrentRespPage';
 //import ApplicationsListPage from 'pages/ApplicationsListPage';
 //import SelectedApplicationPage from 'pages/SelectedApplicationPage';
 import SelectedRespPage from './pages/SelectedRespPage/SelectedRespPage';
@@ -39,6 +38,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { mockVacancies} from "./consts";
 import { setCurrentRespDateAction, setVacancyFromRespAction } from "./slices/RespSlices"
 import AdminPage from './pages/AdminPage/AdminPage';
+import EditPage from './pages/EditPage/EditPage';
 //import { useCurrentRespId } from "./slices/RespSlices"
 
 const cookies = new Cookies();
@@ -121,31 +121,7 @@ function App() {
     }
 };
 
-const getCurrentResp = async (id: number) => {
-  try {
-    const response = await axios(`http://localhost:8000/resp/${id}/`, {
-      method: 'GET',
-      withCredentials: true,
-    })
-    dispatch(setCurrentRespDateAction(response.data.application.creation_date))
-    const newArr = response.data.vacancies.map((raw: ReceivedVacancyData) => ({
-      id: raw.id,
-      title: raw.title,
-      salary: raw.salary,
-      city: raw.city,
-      company: raw.company,
-      image: raw.image,
-      exp: raw.exp,
-      status: raw.status,
-      info: raw.info,
-      adress: raw.adress
-  }));
 
-  dispatch(setVacancyFromRespAction(newArr))
-  } catch(error) {
-    throw error;
-  }
-}
 
   React.useEffect(() => {
     if (cookies.get("session_id")) {
@@ -171,6 +147,7 @@ const getCurrentResp = async (id: number) => {
           </>
         )}
         {isAdmin && <Route path='/employee' element={<AdminPage />} />}
+        {isAdmin && <Route path='/edit/:id' element={<EditPage />} />}
         <Route path="*" element={<Navigate to="/vacancies" replace />} />
       </Routes>
     </HashRouter>
